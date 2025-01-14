@@ -1,0 +1,4 @@
+resources:
+  - dependencies
+  - jobs
+  - mathpix

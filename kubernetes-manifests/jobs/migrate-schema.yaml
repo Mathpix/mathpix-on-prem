@@ -1,0 +1,35 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: mathpix-migrate-schema
+spec:
+  template:
+    spec:
+      initContainers:
+        - name: wait-for-postgres
+          image: busybox
+          command:
+            [
+              "sh",
+              "-c",
+              "until nc -z postgres 5432; do echo waiting for postgres; sleep 2; done;",
+            ]
+      containers:
+        - name: mathpix-migrate-schema
+          image: 426887012336.dkr.ecr.us-east-1.amazonaws.com/mathpix/on-prem-schema:1.0.0
+          imagePullPolicy: Always
+          env:
+            - name: DB_USER
+              valueFrom:
+                configMapKeyRef:
+                  name: postgres-config
+                  key: POSTGRES_USER
+            - name: DB_PASSWD
+              valueFrom:
+                configMapKeyRef:
+                  name: postgres-config
+                  key: POSTGRES_PASSWORD
+            - name: DB_URL
+              value: jdbc:postgresql://postgres:5432/mathpix
+      restartPolicy: Never
+  backoffLimit: 4

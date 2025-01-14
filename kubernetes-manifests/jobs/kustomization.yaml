@@ -1,0 +1,4 @@
+resources:
+  - migrate-schema.yaml
+  - create-minio-buckets.yaml
+  - update-credentials/

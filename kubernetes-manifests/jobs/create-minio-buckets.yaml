@@ -1,0 +1,47 @@
+# ConfigMap for bucket creation script
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: minio-init-script
+data:
+  create-buckets.sh: |
+    #!/bin/sh
+    set -e
+
+    # Wait for MinIO to be ready using mc
+    until mc alias set mpx http://minio:9000 ${MINIO_ROOT_USER} ${MINIO_ROOT_PASSWORD} 2>/dev/null; do
+      echo "Waiting for MinIO to be ready..."
+      sleep 5
+    done
+
+    # Create buckets for Mathpix integration
+    mc mb -p mpx/eqn-images
+    mc mb -p mpx/pdf
+    mc mb -p mpx/converter
+    mc mb -p mpx/mpxdata
+---
+# Job to initialize buckets
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: minio-init-buckets
+spec:
+  template:
+    spec:
+      containers:
+        - name: mc
+          image: minio/mc:latest
+          command: ["/bin/sh"]
+          args: ["/config/create-buckets.sh"]
+          envFrom:
+            - configMapRef:
+                name: minio-config
+          volumeMounts:
+            - name: config
+              mountPath: /config
+      volumes:
+        - name: config
+          configMap:
+            name: minio-init-script
+            defaultMode: 0777
+      restartPolicy: OnFailure

@@ -1,0 +1,5 @@
+resources:
+  - minio.yaml
+  - postgres.yaml
+  - rabbitmq.yaml
+  - redis.yaml

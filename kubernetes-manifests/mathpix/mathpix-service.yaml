@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: mathpix-loadbalancer
+spec:
+  selector:
+    app: mathpix-api
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 8070
+  type: LoadBalancer

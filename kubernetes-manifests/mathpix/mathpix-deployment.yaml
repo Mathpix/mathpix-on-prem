@@ -1,0 +1,47 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mathpix-api
+  labels:
+    app: mathpix-api
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mathpix-api
+  template:
+    metadata:
+      labels:
+        app: mathpix-api
+    spec:
+      containers:
+        - name: mathpix-onprem
+          envFrom:
+            - configMapRef:
+                name: mathpix-env
+          resources:
+            requests:
+              cpu: "16"
+              memory: 64Gi
+            limits:
+              cpu: "16"
+              memory: 64Gi
+              nvidia.com/gpu: "1"
+          image: 426887012336.dkr.ecr.us-east-1.amazonaws.com/mathpix/on-prem-ocr-api:1.0.0
+          imagePullPolicy: Always
+          livenessProbe:
+            httpGet:
+              path: /region-health
+              port: 8070
+            initialDelaySeconds: 30
+            timeoutSeconds: 5
+            periodSeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /region-health
+              port: 8070
+            initialDelaySeconds: 5
+            timeoutSeconds: 5
+            periodSeconds: 10
+          ports:
+            - containerPort: 8070

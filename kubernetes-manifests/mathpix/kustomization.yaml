@@ -1,0 +1,7 @@
+resources:
+  - mathpix-deployment.yaml
+  - mathpix-service.yaml
+configMapGenerator:
+  - name: mathpix-env
+    envs:
+      - mathpix.env
