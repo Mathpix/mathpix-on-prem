@@ -1,0 +1,40 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: scs-publisher-job
+spec:
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: scs-publisher
+    spec:
+      containers:
+        - name: scs-publisher
+          image: REPLACE_ME
+          imagePullPolicy: Always
+          resources:
+            requests:
+              cpu: "2"
+              memory: 4Gi
+          envFrom:
+            - configMapRef:
+                name: scs-publisher-config
+            - secretRef:
+                name: scs-publisher-secrets
+          command:
+            - "/bin/bash"
+            - "-c"
+            - "/home/ubuntu/monorepo/process_folder.bin \
+              --name=$NAME \
+              --job_id=$JOB_ID \
+              --mode=publish \
+              --amqp_url=$AMQP_URL \
+              --storage_endpoint_url=$STORAGE_ENDPOINT_URL \
+              --access_key_id=$ACCESS_KEY_ID \
+              --secret_access_key=$SECRET_ACCESS_KEY \
+              --input_bucket=$INPUT_BUCKET \
+              --input_folder=$INPUT_FOLDER \
+              --output_bucket=$OUTPUT_BUCKET \
+              --output_folder=$OUTPUT_FOLDER"
+      restartPolicy: Never
+  backoffLimit: 0

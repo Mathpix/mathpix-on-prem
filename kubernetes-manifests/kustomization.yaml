@@ -1,4 +1,3 @@
 resources:
   - dependencies
-  - jobs
-  - mathpix
+  - api

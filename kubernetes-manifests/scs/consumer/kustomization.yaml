@@ -1,0 +1,4 @@
+resources:
+  - secrets.yaml
+  - configmap.yaml
+  - consumer-deployment.yaml

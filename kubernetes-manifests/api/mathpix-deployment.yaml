@@ -21,13 +21,11 @@ spec:
                 name: mathpix-env
           resources:
             requests:
-              cpu: "16"
-              memory: 64Gi
+              cpu: "12"
+              memory: 32Gi
             limits:
-              cpu: "16"
-              memory: 64Gi
               nvidia.com/gpu: "1"
-          image: 426887012336.dkr.ecr.us-east-1.amazonaws.com/mathpix/on-prem-ocr-api:1.0.0
+          image: REPLACE_ME
           imagePullPolicy: Always
           livenessProbe:
             httpGet:

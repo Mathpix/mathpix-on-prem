@@ -1,16 +1,19 @@
 # Mathpix on-premise
 
 - [Prerequisites](#prerequisites)
-- [Getting started](#getting-started)
+- [API](#api)
   - [Updating files](#updating-files)
     - [Adding your Mathpix on-prem license](#adding-your-mathpix-on-prem-license)
     - [Setting up initial credentials](#updating-the-credentials)
     - [Replacing the docker images (if not using AWS ECR)](#replacing-the-docker-images-if-not-using-aws-ecr)
   - [Deploying Mathpix on-prem](#deploying-mathpix-on-prem)
-- [How to](#how-to)
-  - [Update mathpix on-prem license](#update-mathpix-on-prem-license)
-  - [Update default credentials](#update-default-credentials)
-  - [Scale the Mathpix API](#scale-the-mathpix-api)
+  - [How to](#how-to)
+    - [Update mathpix on-prem license](#update-mathpix-on-prem-license)
+    - [Update default credentials](#update-default-credentials)
+    - [Scale the Mathpix API](#scale-the-mathpix-api)
+- [SCS](#scs)
+  - [Publisher](#publisher)
+  - [Consumer](#consumer)
 
 ## Prerequisites
 
@@ -36,7 +39,7 @@ Allocated resources:
   nvidia.com/gpu     1              1
 ```
 
-## Getting started
+## API
 
 ### Updating files
 
@@ -129,11 +132,65 @@ kubectl apply -k ./kubernetes-manifests/mathpix
 To update your API credentials, modify the file `kubernetes-manifests/jobs/update-credentials/credentials.json` and run:
 
 ```
-kubectl apply -k ./kubernetes-manifests/jobs/update-credentials
+kubectl apply -k ./kubernetes-manifests/api/jobs/update-credentials
 ```
 
 ### Scale the Mathpix API
 
 ```
 kubectl scale deploy mathpix-api --replicas 3
+```
+
+## SCS
+
+### Publisher
+
+To deploy the secure conversions service you'll need to update a few files in the `kubernetes-manifests/scs` directory.
+
+First, you'll need to update the `kubernetes-manifests/scs/publisher/publisher-job.yaml` file to point to the correct image.
+
+Next, you'll need to update the `kubernetes-manifests/scs/publisher/secrets.yaml` file to point to the correct values for the following secrets:
+
+- `AMQP_URL`
+- `STORAGE_ENDPOINT_URL`
+- `ACCESS_KEY_ID`
+- `SECRET_ACCESS_KEY`
+
+Finally, you'll need to update the `kubernetes-manifests/scs/publisher/configmap.yaml` file to point to the correct values for the following configmaps:
+
+- `NAME`
+- `JOB_ID`
+- `INPUT_BUCKET`
+- `INPUT_FOLDER`
+- `OUTPUT_BUCKET`
+- `OUTPUT_FOLDER`
+
+Once you've updated these files, you can deploy the secure conversions service using the following command:
+
+```
+kubectl apply -k ./kubernetes-manifests/scs/publisher
+```
+
+## Consumer
+
+To deploy the secure conversions publisher you'll need to update a few files in the `kubernetes-manifests/scs/consumer` directory.
+
+First, you'll need to update the `kubernetes-manifests/scs/consumer/consumer-deployment.yaml` file to point to the correct image.
+
+Next, you'll need to update the `kubernetes-manifests/scs/consumer/secrets.yaml` file to point to the correct values for the following secrets:
+
+- `AMQP_URL`
+- `STORAGE_ENDPOINT_URL`
+- `ACCESS_KEY_ID`
+- `SECRET_ACCESS_KEY`
+
+Finally, you'll need to update the `kubernetes-manifests/scs/consumer/configmap.yaml` file to point to the correct values for the following configmaps:
+
+- `NAME`
+- `JOB_ID`
+
+Once you've updated these files, you can deploy the secure conversions consumer using the following command:
+
+```
+kubectl apply -k ./kubernetes-manifests/scs/consumer
 ```

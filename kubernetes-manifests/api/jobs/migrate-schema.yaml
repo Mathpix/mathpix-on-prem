@@ -7,7 +7,7 @@ spec:
     spec:
       initContainers:
         - name: wait-for-postgres
-          image: busybox
+          image: busybox:latest
           command:
             [
               "sh",
