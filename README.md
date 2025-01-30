@@ -14,6 +14,7 @@
 - [SCS](#scs)
   - [Publisher](#publisher)
   - [Consumer](#consumer)
+  - [RabbitMQ Broker](#rabbitmq-broker)
 
 ## Prerequisites
 
@@ -143,20 +144,36 @@ kubectl scale deploy mathpix-api --replicas 3
 
 ## SCS
 
-### Publisher
-
 To deploy the secure conversions service you'll need to update a few files in the `kubernetes-manifests/scs` directory.
 
-First, you'll need to update the `kubernetes-manifests/scs/publisher/publisher-job.yaml` file to point to the correct image.
+Then you'll need to make a new overlay by copying the `kubernetes-manifests/scs/overlays/example` to a new directory:
 
-Next, you'll need to update the `kubernetes-manifests/scs/publisher/secrets.yaml` file to point to the correct values for the following secrets:
+```
+cp kubernetes-manifests/scs/overlays/example kubernetes-manifests/scs/overlays/your-overlay-name
+```
+
+Next, you'll need to update these files to point to the correct SCS image that you have access to.
+
+- `kubernetes-manifests/scs/overlays/your-overlay-name/consumer/kustomization.yaml`
+- `kubernetes-manifests/scs/overlays/your-overlay-name/publisher/kustomization.yaml`
+
+```
+images:
+  - name: external_image
+    newName: REPLACE_WITH_REGISTRY_REPO_IMAGE
+    newTag: REPLACE_WITH_REGISTRY_REPO_IMAGE_TAG
+```
+
+### Publisher
+
+To deploy a publisher job which you'll need to update the `kubernetes-manifests/scs/overlays/your-overlay-name/publisher/secrets.yaml` file to point to the correct values for the following secrets:
 
 - `AMQP_URL`
 - `STORAGE_ENDPOINT_URL`
 - `ACCESS_KEY_ID`
 - `SECRET_ACCESS_KEY`
 
-Finally, you'll need to update the `kubernetes-manifests/scs/publisher/configmap.yaml` file to point to the correct values for the following configmaps:
+Then you'll want to update the `kubernetes-manifests/scs/overlays/your-overlay-name/publisher/configmap.yaml` file to point to the correct values for the following configmaps:
 
 - `NAME`
 - `JOB_ID`
@@ -165,26 +182,24 @@ Finally, you'll need to update the `kubernetes-manifests/scs/publisher/configmap
 - `OUTPUT_BUCKET`
 - `OUTPUT_FOLDER`
 
-Once you've updated these files, you can deploy the secure conversions service using the following command:
+Once you've updated these files, you can deploy the secure conversions service publisher using the following command:
 
 ```
-kubectl apply -k ./kubernetes-manifests/scs/publisher
+kubectl apply -k ./kubernetes-manifests/scs/overlays/your-overlay-name/publisher
 ```
 
 ## Consumer
 
-To deploy the secure conversions publisher you'll need to update a few files in the `kubernetes-manifests/scs/consumer` directory.
+To deploy the secure conversions consumer you'll need to update a few files in the `kubernetes-manifests/scs/consumer` directory.
 
-First, you'll need to update the `kubernetes-manifests/scs/consumer/consumer-deployment.yaml` file to point to the correct image.
-
-Next, you'll need to update the `kubernetes-manifests/scs/consumer/secrets.yaml` file to point to the correct values for the following secrets:
+You'll need to update the `kubernetes-manifests/scs/overlays/your-overlay-name/consumer/secrets.yaml` file to point to the correct values for the following secrets:
 
 - `AMQP_URL`
 - `STORAGE_ENDPOINT_URL`
 - `ACCESS_KEY_ID`
 - `SECRET_ACCESS_KEY`
 
-Finally, you'll need to update the `kubernetes-manifests/scs/consumer/configmap.yaml` file to point to the correct values for the following configmaps:
+Then you'll need to update the `kubernetes-manifests/scs/overlays/your-overlay-name/consumer/configmap.yaml` file to point to the correct values for the following configmaps:
 
 - `NAME`
 - `JOB_ID`
@@ -192,5 +207,5 @@ Finally, you'll need to update the `kubernetes-manifests/scs/consumer/configmap.
 Once you've updated these files, you can deploy the secure conversions consumer using the following command:
 
 ```
-kubectl apply -k ./kubernetes-manifests/scs/consumer
+kubectl apply -k ./kubernetes-manifests/scs/overlays/your-overlay-name/consumer
 ```

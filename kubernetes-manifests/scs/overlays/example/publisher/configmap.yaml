@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: scs-publisher-config
+data:
+  NAME: your-job-name
+  JOB_ID: your-job-id
+  INPUT_BUCKET: your-input-bucket
+  INPUT_FOLDER: your-input-folder
+  OUTPUT_BUCKET: your-output-bucket
+  OUTPUT_FOLDER: your-output-folder

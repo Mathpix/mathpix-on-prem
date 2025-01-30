@@ -10,7 +10,7 @@ spec:
     spec:
       containers:
         - name: scs-publisher
-          image: REPLACE_ME
+          image: external_image
           imagePullPolicy: Always
           resources:
             requests:

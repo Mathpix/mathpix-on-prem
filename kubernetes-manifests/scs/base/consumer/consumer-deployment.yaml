@@ -8,7 +8,7 @@ spec:
     rollingUpdate:
       maxSurge: 0
       maxUnavailable: "10%"
-  replicas: 0
+  replicas: 1
   selector:
     matchLabels:
       app.kubernetes.io/name: scs-consumer
@@ -19,7 +19,7 @@ spec:
     spec:
       containers:
         - name: scs-consumer
-          image: REPLACE_ME
+          image: external_image
           resources:
             requests:
               cpu: "12"

@@ -1,1 +1,4 @@
 mathpix.env
+kubernetes-manifests/scs/overlays/*
+!kubernetes-manifests/scs/overlays/example/
+!kubernetes-manifests/scs/overlays/example/**
