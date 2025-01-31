@@ -194,10 +194,10 @@ To deploy the secure conversions consumer you'll need to update a few files in t
 
 You'll need to update the `kubernetes-manifests/scs/overlays/your-overlay-name/consumer/secrets.yaml` file to point to the correct values for the following secrets:
 
-- `AMQP_URL`
-- `STORAGE_ENDPOINT_URL`
-- `ACCESS_KEY_ID`
-- `SECRET_ACCESS_KEY`
+- `AMQP_URL` - The connection string for the rabbitmq cluster (see [RabbitMQ Broker](#rabbitmq-broker) below)
+- `STORAGE_ENDPOINT_URL` - The S3 compatible storage endpoint url
+- `ACCESS_KEY_ID` - The access key id for the S3 compatible storage endpoint
+- `SECRET_ACCESS_KEY` - The secret access key for the S3 compatible storage endpoint
 
 Then you'll need to update the `kubernetes-manifests/scs/overlays/your-overlay-name/consumer/configmap.yaml` file to point to the correct values for the following configmaps:
 
@@ -208,4 +208,25 @@ Once you've updated these files, you can deploy the secure conversions consumer 
 
 ```
 kubectl apply -k ./kubernetes-manifests/scs/overlays/your-overlay-name/consumer
+```
+
+## RabbitMQ Broker
+
+The only external dependency for the SCS is the RabbitMQ broker. This can be any rabbitmq broker that supports the AMQP 0.9.1 protocol, for processing large files the heartbeat should be disabled and consumer_timeout set to 3600000 (1 hour).
+
+You can also create a rabbitmq broker in kubernetes using the `rabbitmq-operator` and the cluster configuration in the `rabbitmq-broker-setup` directory:
+
+```bash
+# Install the rabbitmq cluster operator
+helm repo add bitnami https://charts.bitnami.com/bitnami
+helm install rabbitmq-cluster-operator bitnami/rabbitmq-cluster-operator
+
+# Create a rabbitmq cluster
+kubectl apply -f .
+```
+
+Once that's finished you can get the connection string for the rabbitmq cluster:
+
+```bash
+kubectl get secret rabbitmq-cluster-default-user -n default -o jsonpath="{.data.connection_string}" | base64 --decode
 ```
