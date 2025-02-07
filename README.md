@@ -14,6 +14,7 @@
 - [SCS](#scs)
   - [Publisher](#publisher)
   - [Consumer](#consumer)
+  - [GCP GKE Setup](#gcp-gke-setup)
   - [RabbitMQ Broker](#rabbitmq-broker)
 
 ## Prerequisites
@@ -210,6 +211,10 @@ Once you've updated these files, you can deploy the secure conversions consumer 
 kubectl apply -k ./kubernetes-manifests/scs/overlays/your-overlay-name/consumer
 ```
 
+## GCP GKE Cluster Setup
+
+To create a GKE cluster with the GPU operator and GPU nodes from scratch you can use terraform. Look at the [README.md](kubernetes-cluster-setup/gke/README.md) in the [`kubernetes-cluster-setup/gke/`](kubernetes-cluster-setup/gke/) directory for more information.
+
 ## RabbitMQ Broker
 
 The only external dependency for the SCS is the RabbitMQ broker. This can be any rabbitmq broker that supports the AMQP 0.9.1 protocol, for processing large files the heartbeat should be disabled and consumer_timeout set to 3600000 (1 hour).
@@ -225,8 +230,10 @@ helm install rabbitmq-cluster-operator bitnami/rabbitmq-cluster-operator
 kubectl apply -f .
 ```
 
-Once that's finished you can get the connection string for the rabbitmq cluster:
+Once that's finished you can get the connection string for the rabbitmq cluster using this:
 
 ```bash
 kubectl get secret rabbitmq-cluster-default-user -n default -o jsonpath="{.data.connection_string}" | base64 --decode
 ```
+
+**Note:**: The connection string should end with a `/`, some clusters may add the kubernetes user as the default vhost, which should be removed along with the `%` character denoting the end of the string.

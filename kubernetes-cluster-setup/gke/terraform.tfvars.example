@@ -1,0 +1,16 @@
+# Setup these values before running the gke terraform module
+project_id                        = "project-id"
+cluster_name                      = "demo-cluster"
+region                            = "us-central1"
+node_zones                        =  ["us-central1-a"]
+disk_size_gb                      = "500"
+cpu_instance_type                 = "e2-standard-8"
+cpu_min_node_count                = "3"
+cpu_max_node_count                = "20"
+gpu_instance_type                 = "g2-standard-16"
+gpu_count                         = "1"
+gpu_min_node_count                = "0"
+gpu_max_node_count                = "1024"
+gpu_type                          = "nvidia-l4"
+num_cpu_nodes                     = 3
+num_gpu_nodes                     = 0
