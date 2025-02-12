@@ -59,26 +59,50 @@ cp kubernetes-manifests/mathpix/mathpix.env.example kubernetes-manifests/mathpix
 
 You should update the credentials in the [kubernetes-manifests/jobs/update-credentials/credentials.json](kubernetes-manifests/jobs/update-credentials/credentials.json) file with the credentials you want to use to access the Mathpix on-prem OCR API. 
 
-#### Replacing the docker images (if not using AWS ECR)
+#### Replacing the docker images
 
-If you haven't had your AWS account granted access to download images from our AWS ECR then you should update the images to point to your registry where your cluster can access them. If you're using Google Cloud Platform or another kubernetes cluster without access you'll need to get our images (we'll help you with this) and then push them to your google container registry or google artifact registry and replace the image fields in these files:
+To update the docker images you will need to update these files:
 
-- [kubernetes-manifests/mathpix/mathpix-deployment.yaml](kubernetes-manifests/mathpix/mathpix-deployment.yaml)
-- [kubernetes-manifests/jobs/migrate-schema.yaml](kubernetes-manifests/jobs/migrate-schema.yaml)
-- [kubernetes-manifests/jobs/update-credentials/update-credentials.yaml](kubernetes-manifests/jobs/update-credentials/update-credentials.yaml)
+- [kubernetes-manifests/api/mathpix/kustomization.yaml](kubernetes-manifests/api/kustomization)
+- [kubernetes-manifests/api/jobs/kustomization.yaml](kubernetes-manifests/api/jobs/kustomization.yaml)
+- [kubernetes-manifests/api/jobs/update-credentials/kustomization.yaml](kubernetes-manifests/api/jobs/update-credentials/kustomization.yaml)
+
+**Note:** If you haven't had your AWS account granted access to download images from our AWS ECR then you should update the images to point to the registry where your cluster can access them. If you're using Google Cloud Platform or another kubernetes cluster without access to ECR you'll need to get our images into to your google artifact registry or other registry that your cluster has access to and use those images in the kustomization files.
 
 ### Deploying Mathpix on-prem
 
-To create the entire Mathpix on-prem deployment:
+To create the entire Mathpix on-prem deployment first create the dependencies such as postgres, redis, minio and rabbitmq:
 
 ```
-kubectl apply -k ./kubernetes-manifests
+kubectl apply -k ./kubernetes-manifests/api/dependencies
+```
+
+Once they are running you can start the jobs that will migrate the database and seed it with credentials and create the storage buckets:
+
+```
+# Check if all the dependencies are running
+kubectl wait --for=condition=Ready pod/minio-0 pod/postgres-0 pod/rabbitmq-0 pod/redis-0 --timeout=240s
+
+# Apply the jobs that will migrate the database and seed it with credentials and create the storage buckets
+kubectl apply -k ./kubernetes-manifests/api/jobs
+```
+
+Once the jobs have completed you can deploy the Mathpix OCR API:
+
+```
+# Wait for the jobs to complete
+kubectl wait --for=condition=complete job/mathpix-migrate-schema job/mathpix-update-credentials job/minio-init-buckets --timeout=180s
+
+# Start the mathpix OCR API
+kubectl apply -k ./kubernetes-manifests/api/mathpix
 ```
 
 To remove the on-prem deployment, run:
 
 ```
-kubectl delete -k ./kubernetes-manifests
+kubectl delete -k ./kubernetes-manifests/api/dependencies
+kubectl delete -k ./kubernetes-manifests/api/jobs
+kubectl delete -k ./kubernetes-manifests/api/mathpix
 ```
 
 The Mathpix API will take a few minutes to start up, you can check the status with:
@@ -121,12 +145,20 @@ curl -X POST $API_URL/v3/pdf \
 
 ## How to
 
+### Update the docker images:
+
+When we release a new image you will update [kubernetes-manifests/api/mathpix/kustomization.yaml](kubernetes-manifests/api/kustomization) with the new image tag and then update the deployment with:
+
+```
+kubectl apply -k ./kubernetes-manifests/api/mathpix
+```
+
 ### Update mathpix on-prem license
 
 To update the mathpix on-prem license, modify the file `kubernetes-manifests/mathpix/mathpix.env` and run:
 
 ```
-kubectl apply -k ./kubernetes-manifests/mathpix
+kubectl apply -k ./kubernetes-manifests/api/mathpix
 ```
 
 ### Update API credentials
@@ -139,8 +171,17 @@ kubectl apply -k ./kubernetes-manifests/api/jobs/update-credentials
 
 ### Scale the Mathpix API
 
+Scaling the Mathpix OCR API can be done with `kubectl`:
+
 ```
 kubectl scale deploy mathpix-api --replicas 3
+```
+
+Or by modifying the [kubernetes-manifests/api/mathpix/kustomization.yaml](kubernetes-manifests/api/kustomization) file's replicas count and re-applying:
+
+```
+# After updating replicas count in kubernetes-manifests/api/mathpix/kustomization.yaml
+kubectl apply -k ./kubernetes-manifests/api/mathpix
 ```
 
 ## SCS

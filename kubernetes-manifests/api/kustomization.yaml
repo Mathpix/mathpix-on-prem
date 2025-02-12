@@ -1,8 +1,0 @@
-resources:
-  - mathpix-deployment.yaml
-  - mathpix-service.yaml
-  - jobs
-configMapGenerator:
-  - name: mathpix-env
-    envs:
-      - mathpix.env

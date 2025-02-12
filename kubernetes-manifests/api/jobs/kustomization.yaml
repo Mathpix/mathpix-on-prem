@@ -1,4 +1,12 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
 resources:
+  - update-credentials/
   - migrate-schema.yaml
   - create-minio-buckets.yaml
-  - update-credentials/
+
+images:
+  - name: on-prem-schema
+    newName: 426887012336.dkr.ecr.us-east-1.amazonaws.com/mathpix/on-prem-schema
+    newTag: 1.0.0

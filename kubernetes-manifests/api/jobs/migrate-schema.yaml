@@ -16,7 +16,7 @@ spec:
             ]
       containers:
         - name: mathpix-migrate-schema
-          image: 426887012336.dkr.ecr.us-east-1.amazonaws.com/mathpix/on-prem-schema:1.0.0
+          image: on-prem-schema
           imagePullPolicy: Always
           env:
             - name: DB_USER

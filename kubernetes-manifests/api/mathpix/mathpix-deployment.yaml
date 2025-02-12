@@ -25,7 +25,7 @@ spec:
               memory: 32Gi
             limits:
               nvidia.com/gpu: "1"
-          image: REPLACE_ME
+          image: on-prem-ocr-api
           imagePullPolicy: Always
           livenessProbe:
             httpGet:

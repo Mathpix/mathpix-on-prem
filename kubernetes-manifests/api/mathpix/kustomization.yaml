@@ -1,0 +1,20 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+resources:
+  - mathpix-deployment.yaml
+  - mathpix-service.yaml
+
+images:
+  - name: on-prem-ocr-api
+    newName: 426887012336.dkr.ecr.us-east-1.amazonaws.com/mathpix/on-prem-ocr-api
+    newTag: 1.0.1
+
+replicas:
+- name: mathpix-api
+  count: 1
+
+configMapGenerator:
+  - name: mathpix-env
+    envs:
+      - mathpix.env
