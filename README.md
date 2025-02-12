@@ -252,6 +252,8 @@ Once you've updated these files, you can deploy the secure conversions consumer 
 kubectl apply -k ./kubernetes-manifests/scs/overlays/your-overlay-name/consumer
 ```
 
+You can also update the consumer replica count in your consumer overlay's `kustomization.yaml` from the default of 1.
+
 ## GCP GKE Cluster Setup
 
 To create a GKE cluster with the GPU operator and GPU nodes from scratch you can use terraform. Look at the [README.md](kubernetes-cluster-setup/gke/README.md) in the [`kubernetes-cluster-setup/gke/`](kubernetes-cluster-setup/gke/) directory for more information.

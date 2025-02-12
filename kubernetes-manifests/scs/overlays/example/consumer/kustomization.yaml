@@ -12,3 +12,7 @@ images:
   - name: external_image
     newName: REPLACE_WITH_REGISTRY_REPO_IMAGE
     newTag: REPLACE_WITH_REGISTRY_REPO_IMAGE_TAG
+
+replicas:
+- name: scs-consumer
+  count: 1
