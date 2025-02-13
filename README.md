@@ -57,13 +57,13 @@ cp kubernetes-manifests/mathpix/mathpix.env.example kubernetes-manifests/mathpix
 
 #### Setting up initial credentials
 
-You should update the credentials in the [kubernetes-manifests/jobs/update-credentials/credentials.json](kubernetes-manifests/jobs/update-credentials/credentials.json) file with the credentials you want to use to access the Mathpix on-prem OCR API. 
+You should update the credentials in the [kubernetes-manifests/api/jobs/update-credentials/credentials.json](kubernetes-manifests/api/jobs/update-credentials/credentials.json) file with the credentials you want to use to access the Mathpix on-prem OCR API. 
 
 #### Replacing the docker images
 
 To update the docker images you will need to update these files:
 
-- [kubernetes-manifests/api/mathpix/kustomization.yaml](kubernetes-manifests/api/kustomization)
+- [kubernetes-manifests/api/mathpix/kustomization.yaml](kubernetes-manifests/api/mathpix/kustomization.yaml)
 - [kubernetes-manifests/api/jobs/kustomization.yaml](kubernetes-manifests/api/jobs/kustomization.yaml)
 - [kubernetes-manifests/api/jobs/update-credentials/kustomization.yaml](kubernetes-manifests/api/jobs/update-credentials/kustomization.yaml)
 
