@@ -46,11 +46,11 @@ Allocated resources:
 ### Updating files
 
 #### Adding your Mathpix on-prem license
-First you'll need to copy `kubernetes-manifests/mathpix/mathpix.env.example` to `kubernetes-manifests/mathpix/mathpix.env` and add your `MATHPIX_ON_PREM_LICENSE` to it.
+First you'll need to copy `kubernetes-manifests/api/mathpix/mathpix.env.example` to `kubernetes-manifests/api/mathpix/mathpix.env` and add your `MATHPIX_ON_PREM_LICENSE` to it.
 
 ```
-cp kubernetes-manifests/mathpix/mathpix.env.example kubernetes-manifests/mathpix/mathpix.env
-# Now open kubernetes-manifests/mathpix/mathpix.env
+cp kubernetes-manifests/mathpix/api/mathpix.env.example kubernetes-manifests/api/mathpix/mathpix.env
+# Now open kubernetes-manifests/api/mathpix/mathpix.env
 # Replace REPLACE_WITH_YOUR_LICENSE with your license
 # MATHPIX_ON_PREM_LICENSE=REPLACE_WITH_YOUR_LICENSE
 ```
