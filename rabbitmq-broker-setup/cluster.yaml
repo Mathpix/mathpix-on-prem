@@ -3,6 +3,7 @@ kind: RabbitmqCluster
 metadata:
   name: rabbitmq-cluster
 spec:
+  image: bitnami/rabbitmq:3.11.28
   replicas: 3
   resources:
     requests:
@@ -13,9 +14,7 @@ spec:
       memory: 10Gi
   rabbitmq:
     additionalConfig: |
-      cluster_partition_handling = pause_minority
-      disk_free_limit.relative = 1.0
-      collect_statistics_interval = 10000
+      cluster_partition_handling = autoheal
       consumer_timeout = 3600000
       heartbeat = 0
   persistence:
@@ -44,3 +43,21 @@ spec:
               labelSelector:
                 matchLabels:
                   app.kubernetes.io/name: rabbitmq-cluster
+---
+apiVersion: rabbitmq.com/v1beta1
+kind: Policy
+metadata:
+  name: ha-policy
+  namespace: default
+spec:
+  name: ha-policy
+  vhost: "/"
+  pattern: ""
+  applyTo: "all"
+  definition:
+    ha-mode:
+     all
+    ha-sync-mode:
+     automatic
+  rabbitmqClusterReference:
+    name: rabbitmq-cluster
