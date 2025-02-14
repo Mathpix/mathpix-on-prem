@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Exit on any error
-set -e
+set -euo pipefail
 
 # Colors for output
 GREEN='\033[0;32m'
@@ -11,35 +11,39 @@ NC='\033[0m' # No Color
 
 echo -e "${GREEN}Checking dependencies...${NC}"
 
-# 1️⃣ Check if gcloud is installed
+# Check dependencies
 if ! command -v gcloud &> /dev/null; then
     echo -e "${RED}Error: gcloud is not installed. Please install Google Cloud SDK.${NC}"
     exit 1
 fi
 
-# 2️⃣ Check if Terraform is installed
 if ! command -v terraform &> /dev/null; then
     echo -e "${RED}Error: Terraform is not installed. Please install Terraform.${NC}"
     exit 1
 fi
 
-# 3️⃣ Check if gcloud is authenticated
-if ! gcloud auth list --format="value(account)" | grep -q "@"; then
+# Check gcloud auth
+if ! gcloud auth list --format="value(account)" 2>/dev/null | grep -q "@"; then
     echo -e "${RED}Error: gcloud is not authenticated. Run 'gcloud auth login' first.${NC}"
     exit 1
 fi
 
-# 4️⃣ Check if terraform.tfvars exists
+# Check for terraform.tfvars
 if [ ! -f "terraform.tfvars" ]; then
-    echo -e "${RED}Error: terraform.tfvars is missing.${NC}"
-    echo -e "${YELLOW}Please copy terraform.tfvars.example to terraform.tfvars and update it before proceeding.${NC}"
-    echo -e "${YELLOW}Run: cp terraform.tfvars.example terraform.tfvars${NC}"
-    exit 1
+    if [ -f "terraform.tfvars.example" ]; then
+        echo -e "${YELLOW}terraform.tfvars is missing. Copying from example...${NC}"
+        cp terraform.tfvars.example terraform.tfvars
+        echo -e "${YELLOW}Please review and update terraform.tfvars before proceeding${NC}"
+        exit 1
+    else
+        echo -e "${RED}Error: terraform.tfvars is missing and no example file found.${NC}"
+        exit 1
+    fi
 fi
 
 echo -e "${GREEN}All checks passed! Proceeding with Terraform setup...${NC}"
 
-# 5️⃣ Run Terraform Commands
+# Run Terraform Commands
 echo -e "${GREEN}Initializing Terraform...${NC}"
 terraform init
 
