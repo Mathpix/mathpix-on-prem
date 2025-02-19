@@ -16,3 +16,10 @@ images:
 replicas:
 - name: scs-consumer
   count: 1
+
+configMapGenerator:
+  - name: scs-conversion-config
+    behavior: replace
+    files:
+      - conversion_options.json
+      - ocr_options.json

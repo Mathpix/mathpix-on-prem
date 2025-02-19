@@ -254,6 +254,27 @@ kubectl apply -k ./kubernetes-manifests/scs/overlays/your-overlay-name/consumer
 
 You can also update the consumer replica count in your consumer overlay's `kustomization.yaml` from the default of 1.
 
+Furthermore you can update the default options for output formats in the conversion_options.json file:
+
+```json
+{
+  "md": {},
+  "html": {},
+  "tex.zip": {},
+  "docx": {}
+}
+```
+
+Removing any of the fields will disable the output format, so if you only wanted `.md` files you could use:
+
+```
+{
+  "md": {}
+}
+```
+
+**Note:** All output folders will contain `.lines.json`, `.lines.mmd.json`, and `.mmd` files as these are the base output formats that other formats are derived from.
+
 ## GCP GKE Cluster Setup
 
 To create a GKE cluster with the GPU operator and GPU nodes from scratch you can use terraform. Look at the [README.md](kubernetes-cluster-setup/gke/README.md) in the [`kubernetes-cluster-setup/gke/`](kubernetes-cluster-setup/gke/) directory for more information.

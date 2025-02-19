@@ -1,0 +1,33 @@
+{
+    "v3/text": {
+        "include_smiles": true,
+        "idiomatic_braces": true,
+        "enable_spell_check": true,
+        "idiomatic_eqn_arrays": true,
+        "enable_tables_fallback": true,
+        "math_inline_delimiters": [
+            "\\(",
+            "\\)"
+        ],
+        "math_display_delimiters": [
+            "\n\\[\n",
+            "\n\\]\n"
+        ]
+    },
+    "v3/pdf": {
+        "enable_spell_check": true,
+        "preserve_section_numbering": true,
+        "enable_tables_fallback": true,
+        "include_equation_tags": true,
+        "include_chemistry_as_image": true,
+        "math_inline_delimiters": [
+            "\\(",
+            "\\)"
+        ],
+        "math_display_delimiters": [
+            "\\[\n",
+            "\n\\]"
+        ]
+    },
+    "v3/latex": {}
+}
