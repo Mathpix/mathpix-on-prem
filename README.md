@@ -262,21 +262,4 @@ To create a GKE cluster with the GPU operator and GPU nodes from scratch you can
 
 The only external dependency for the SCS is the RabbitMQ broker. This can be any rabbitmq broker that supports the AMQP 0.9.1 protocol, for processing large files the heartbeat should be disabled and consumer_timeout set to 3600000 (1 hour).
 
-You can also create a rabbitmq broker in kubernetes using the `rabbitmq-operator` and the cluster configuration in the `rabbitmq-broker-setup` directory:
-
-```bash
-# Install the rabbitmq cluster operator
-helm repo add bitnami https://charts.bitnami.com/bitnami
-helm install rabbitmq-cluster-operator bitnami/rabbitmq-cluster-operator
-
-# Create a rabbitmq cluster
-kubectl apply -f .
-```
-
-Once that's finished you can get the connection string for the rabbitmq cluster using this:
-
-```bash
-kubectl get secret rabbitmq-cluster-default-user -n default -o jsonpath="{.data.connection_string}" | base64 --decode
-```
-
-**Note:**: The connection string should end with a `/`, some clusters may add the kubernetes user as the default vhost, which should be removed along with the `%` character denoting the end of the string.
+You can also create a rabbitmq broker cluster in kubernetes using the `rabbitmq-operator` with instructons and configuration in the [rabbitmq-broker-setup](./rabbitmq-broker-setup/) directory.
