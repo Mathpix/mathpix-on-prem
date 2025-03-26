@@ -53,6 +53,7 @@ spec:
               --access_key_id=$ACCESS_KEY_ID \
               --secret_access_key=$SECRET_ACCESS_KEY \
               --influxdb_host=$INFLUXDB_HOST \
+              $( [ \"$SAVE_OUTPUTS_AS_ZIP\" = \"true\" ] && echo \"--save_outputs_as_zip true\" ) \
               --not_job_mode \
               --endpoint='v3/pdf'"
           volumeMounts:

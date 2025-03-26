@@ -25,11 +25,8 @@ data:
   CONVERSION_OPTIONS_FILE: "/home/ubuntu/monorepo/ocr-api/mathpix/ocr_service/process_folder/configs/conversion_options.json"
   OCR_OPTIONS_FILE: "/home/ubuntu/monorepo/ocr-api/mathpix/ocr_service/process_folder/configs/ocr_options.json"
 
-  # InfluxDB stats configuration
-  INFLUXDB_ORG: ""
-  INFLUXDB_HOST: ""
-  INFLUXDB_TOKEN: ""
-  INFLUXDB_DATABASE: ""
+  # This option makes all the output files be zipped in an outputs.zip file
+  SAVE_OUTPUTS_AS_ZIP: "false"
 
   # Environment variables that don't need to be changed below
   MATHPIX_ENV: "custom"
