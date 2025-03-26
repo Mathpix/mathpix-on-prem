@@ -7,7 +7,21 @@ resources:
 patches:
   - path: configmap.yaml
   - path: secrets.yaml
-  # Uncomment below if you need to change the instance type to use
+  ## Uncomment below if you need to add imagePullSecrets
+  # - target:
+  #     kind: Deployment
+  #     name: scs-consumer
+  #   patch: |-
+  #     apiVersion: apps/v1
+  #     kind: Deployment
+  #     metadata:
+  #       name: scs-consumer
+  #     spec:
+  #       template:
+  #         spec:
+  #           imagePullSecrets:
+  #             - name: my-registry-secret
+  ## Uncomment below if you need to change the instance type to use
   # multiple GPUs or request more resources like CPU or memory, in
   # addition to changing the configmap.yaml's DEVICE_COUNT variable
   # - target:
