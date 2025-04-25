@@ -24,7 +24,7 @@ image_id, job_id, name, ocr_time, pdf_id, segmentation_time, spell_check_time, t
 Additionally, for every **PDF** processed, we send:
 
 ```
-job_id, name, num_pages, pdf_id, split_time, time
+job_id, name, num_pages, pdf_id, split_time, time, conversion_time, ext
 ```
 
 > **Note:**  
