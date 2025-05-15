@@ -15,7 +15,7 @@ spec:
   rabbitmq:
     additionalConfig: |
       cluster_partition_handling = autoheal
-      consumer_timeout = 3600000
+      consumer_timeout = 21600000
       heartbeat = 0
   persistence:
     storageClassName: ssd
