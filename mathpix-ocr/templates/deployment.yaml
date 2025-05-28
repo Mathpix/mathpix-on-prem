@@ -15,6 +15,27 @@ spec:
       labels:
         app: {{ include "mathpix-ocr.fullname" $ }}-{{ $name | lower }}
     spec:
+      initContainers:
+        - name: wait-for-postgres
+          image: busybox:latest
+          command:
+            - sh
+            - -c
+            - |
+              until nc -z {{ include "mathpix-ocr.fullname" $ }}-postgres 5432; do
+                echo "waiting for postgres"
+                sleep 2
+              done
+        - name: wait-for-redis
+          image: busybox:latest
+          command:
+            - sh
+            - -c
+            - |
+              until nc -z {{ include "mathpix-ocr.fullname" $ }}-redis 6379; do
+                echo "waiting for redis"
+                sleep 2
+              done
       containers:
         - name: {{ $name | lower }}
           image: {{ $svc.image }}
