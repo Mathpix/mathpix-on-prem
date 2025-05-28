@@ -1,0 +1,49 @@
+{{- if and (not .Values.postgres.connectionString) .Values.postgres.migration.enabled }}
+
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{ include "mathpix-ocr.fullname" . }}-migrate-schema
+  namespace: mathpix-ocr
+  annotations:
+    # Helm hook: run **after** install and upgrade
+    "helm.sh/hook": post-install,post-upgrade
+    # ordering weight if you have multiple hooks
+    "helm.sh/hook-weight": "0"
+    # clean up the Job once it’s succeeded
+    "helm.sh/hook-delete-policy": hook-succeeded
+spec:
+  backoffLimit: {{ .Values.postgres.migration.backoffLimit }}
+  template:
+    spec:
+      initContainers:
+        - name: wait-for-postgres
+          image: busybox:latest
+          command:
+            - sh
+            - -c
+            - |
+              until nc -z {{ include "mathpix-ocr.fullname" . }}-postgres 5432; do
+                echo "waiting for postgres"
+                sleep 2
+              done
+      containers:
+        - name: migrate-schema
+          image: {{ .Values.postgres.migration.image }}
+          imagePullPolicy: {{ .Values.postgres.migration.imagePullPolicy }}
+          env:
+            - name: DB_USER
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ include "mathpix-ocr.fullname" . }}-postgres-config
+                  key: POSTGRES_USER
+            - name: DB_PASSWD
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ include "mathpix-ocr.fullname" . }}-postgres-config
+                  key: POSTGRES_PASSWORD
+            - name: DB_URL
+              value: jdbc:postgresql://{{ include "mathpix-ocr.fullname" . }}-postgres:5432/{{ .Values.postgres.database }}
+      restartPolicy: Never
+
+{{- end }}

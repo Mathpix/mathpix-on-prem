@@ -1,0 +1,99 @@
+# values.yaml
+global:
+  imagePullPolicy: IfNotPresent
+  resources:
+    cpu: 256
+    memory: 512
+  nodeSelector: {}
+  tolerations: []
+  affinity: {}
+
+services:
+  converter:
+    enabled: true
+    image: "426887012336.dkr.ecr.us-east-1.amazonaws.com/mathpix/mpxadmin:mathpix-converter-720fc40f0c07398039189390b7176c656b4d19dc"
+    replicaCount: 1
+    service:
+      port: 8080
+    env: {}
+    resources: {}
+
+  ocr-service:
+    enabled: true
+    image: "426887012336.dkr.ecr.us-east-1.amazonaws.com/mathpix/mpxadmin:mathpix-ocr-service-720fc40f0c07398039189390b7176c656b4d19dc"
+    replicaCount: 1
+    service:
+      type: ClusterIP
+      port: 8070
+    env: {}
+    resources: {}
+
+  pdf-loader:
+    enabled: true
+    image: "426887012336.dkr.ecr.us-east-1.amazonaws.com/mathpix/mpxadmin:mathpix-pdf-loader-720fc40f0c07398039189390b7176c656b4d19dc"
+    replicaCount: 1
+    service:
+      port: 8080
+    env: {}
+    resources: {}
+
+  pdf-results:
+    enabled: true
+    image: "426887012336.dkr.ecr.us-east-1.amazonaws.com/mathpix/mpxadmin:mathpix-pdf-results-720fc40f0c07398039189390b7176c656b4d19dc"
+    replicaCount: 1
+    service:
+      port: 8080
+    env: {}
+    resources: {}
+
+  results:
+    enabled: true
+    image: "426887012336.dkr.ecr.us-east-1.amazonaws.com/mathpix/mpxadmin:mathpix-results-720fc40f0c07398039189390b7176c656b4d19dc"
+    replicaCount: 1
+    service:
+      port: 8080
+    env: {}
+    resources: {}
+
+  ocr-worker:
+    enabled: true
+    image: "426887012336.dkr.ecr.us-east-1.amazonaws.com/mathpix/mpxadmin:mathpix-ocr-worker-720fc40f0c07398039189390b7176c656b4d19dc"
+    replicaCount: 1
+    service:
+      port: 8080
+    env: {}
+    resources: {}
+
+postgres:
+  # if this is non-empty, we assume you're using your own DB
+  connectionString: ""
+  # only used if connectionString is empty
+  database: mathpix
+  user: user
+  password: password
+  # PVC / storage settings
+  persistence:
+    accessModes:
+      - ReadWriteOnce
+    size: 10Gi
+  # image settings
+  image:
+    repository: postgres
+    tag: "16"
+  migration:
+    enabled: true
+    image: "426887012336.dkr.ecr.us-east-1.amazonaws.com/mathpix/on-prem-schema:latest"
+    imagePullPolicy: Always
+    backoffLimit: 4
+
+  credentials:
+    enabled: true
+    image: "426887012336.dkr.ecr.us-east-1.amazonaws.com/mathpix/on-prem-credentials:latest"
+    imagePullPolicy: Always
+    backoffLimit: 4
+    configMapName: mathpix-api-credentials
+    configKey: credentials.json
+    mountPath: /app/credentials.json
+    file: config/credentials.json
+    configMapName: mathpix-api-credentials
+
