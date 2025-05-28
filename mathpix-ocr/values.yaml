@@ -2,8 +2,9 @@
 global:
   imagePullPolicy: IfNotPresent
   resources:
-    cpu: 256
-    memory: 512
+    requests:
+      cpu: "256m"
+      memory: "512Mi"
   nodeSelector: {}
   tolerations: []
   affinity: {}
@@ -15,6 +16,12 @@ services:
     replicaCount: 1
     service:
       port: 8080
+    command:
+      - node
+      - /home/ubuntu/monorepo/ocr-api/mathpix/mmd-converter/conversion.js
+    args:
+      - converter
+      - "8080"
     env: {}
     resources: {}
 
@@ -25,6 +32,9 @@ services:
     service:
       type: ClusterIP
       port: 8070
+    command:
+      - node
+      - /home/ubuntu/monorepo/ocr-api/mathpix/ocr_service/main.js
     env: {}
     resources: {}
 
@@ -34,6 +44,12 @@ services:
     replicaCount: 1
     service:
       port: 8080
+    command:
+      - node
+      - /home/ubuntu/monorepo/ocr-api/mathpix/pdf/pdfload.js
+    args:
+      - pdf-loader
+      - "8080"
     env: {}
     resources: {}
 
@@ -43,6 +59,12 @@ services:
     replicaCount: 1
     service:
       port: 8080
+    command:
+      - node
+      - /home/ubuntu/monorepo/ocr-api/mathpix/pdf/pdfpage.js
+    args:
+      - pdf-page
+      - "8080"
     env: {}
     resources: {}
 
@@ -52,6 +74,11 @@ services:
     replicaCount: 1
     service:
       port: 8080
+    command:
+      - node
+      - /home/ubuntu/monorepo/ocr-api/mathpix/ocr_service/results.js
+    args:
+      - "8080"
     env: {}
     resources: {}
 
@@ -61,6 +88,15 @@ services:
     replicaCount: 1
     service:
       port: 8080
+    command:
+      - /bin/bash
+      - -c
+    args:
+      - >
+        source /home/ubuntu/miniconda3/etc/profile.d/conda.sh &&
+        conda activate conda-mathpix-env &&
+        python3 /home/ubuntu/monorepo/ocr-api/mathpix/ocr_service/ocr_rabbit.py \
+          --name ocr --port 8080
     env: {}
     resources: {}
 
@@ -82,13 +118,13 @@ postgres:
     tag: "16"
   migration:
     enabled: true
-    image: "426887012336.dkr.ecr.us-east-1.amazonaws.com/mathpix/on-prem-schema:latest"
+    image: "426887012336.dkr.ecr.us-east-1.amazonaws.com/mathpix/on-prem-schema:1.0.0"
     imagePullPolicy: Always
     backoffLimit: 4
 
   credentials:
     enabled: true
-    image: "426887012336.dkr.ecr.us-east-1.amazonaws.com/mathpix/on-prem-credentials:latest"
+    image: "426887012336.dkr.ecr.us-east-1.amazonaws.com/mathpix/on-prem-credentials:1.0.0"
     imagePullPolicy: Always
     backoffLimit: 4
     configMapName: mathpix-api-credentials

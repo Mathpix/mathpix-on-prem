@@ -2,10 +2,10 @@ apiVersion: v1
 kind: Service
 metadata:
   name: mathpix-ocr-loadbalancer
-  namespace: mathpix-ocr
+  namespace: {{ include "mathpix-ocr.fullname" . }}-mathpix-ocr
 spec:
   selector:
-    app: mathpix-ocr
+    app: {{ include "mathpix-ocr.fullname" . }}-ocr-service
   ports:
     - protocol: TCP
       port: 80

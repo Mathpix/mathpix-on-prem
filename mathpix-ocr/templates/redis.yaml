@@ -2,7 +2,7 @@ apiVersion: apps/v1
 kind: StatefulSet
 metadata:
   name: {{ include "mathpix-ocr.fullname" . }}-redis
-  namespace: mathpix-ocr
+  namespace: {{ include "mathpix-ocr.fullname" . }}-mathpix-ocr
 spec:
   serviceName: {{ include "mathpix-ocr.fullname" . }}-redis
   replicas: 1
@@ -36,7 +36,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: {{ include "mathpix-ocr.fullname" . }}-redis
-  namespace: mathpix-ocr
+  namespace: {{ include "mathpix-ocr.fullname" . }}-mathpix-ocr
 spec:
   ports:
     - port: 6379
@@ -44,4 +44,3 @@ spec:
       name: redis
   selector:
     app: {{ include "mathpix-ocr.fullname" . }}-redis
-  clusterIP: None

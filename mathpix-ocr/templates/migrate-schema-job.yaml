@@ -4,13 +4,10 @@ apiVersion: batch/v1
 kind: Job
 metadata:
   name: {{ include "mathpix-ocr.fullname" . }}-migrate-schema
-  namespace: mathpix-ocr
+  namespace: {{ include "mathpix-ocr.fullname" . }}-mathpix-ocr
   annotations:
-    # Helm hook: run **after** install and upgrade
     "helm.sh/hook": post-install,post-upgrade
-    # ordering weight if you have multiple hooks
     "helm.sh/hook-weight": "0"
-    # clean up the Job once it’s succeeded
     "helm.sh/hook-delete-policy": hook-succeeded
 spec:
   backoffLimit: {{ .Values.postgres.migration.backoffLimit }}

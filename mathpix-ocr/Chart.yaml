@@ -1,6 +1,7 @@
 apiVersion: v2
 name: mathpix-ocr
 description: A Helm chart for Kubernetes
+namespace: {{ include "mathpix-ocr.fullname" $ }}-mathpix-ocr
 
 # A chart can be either an 'application' or a 'library' chart.
 #
