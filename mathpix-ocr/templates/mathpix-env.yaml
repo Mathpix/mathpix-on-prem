@@ -2,60 +2,10 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: {{ include "mathpix-ocr.fullname" . }}-mathpix-env
-  namespace: {{ include "mathpix-ocr.fullname" . }}-mathpix-ocr
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{ include "mathpix-ocr.labels" . | nindent 4 }}
 data:
-  API_SUBSET: batch,http,latex,pdf,results,strokes,text
-  ARCHIVE_CONNECTION: "postgres://user:password@{{ include "mathpix-ocr.fullname" . }}-postgres:5432/mathpix"
-  ARCHIVE_DATABASE: mathpix
-  ARCHIVE_HOST: postgres
-  CDN_MODE: s3
-  CONVERSIONS_WORKER_COUNT: "1"
-  DB_CONNECTION: "postgres://user:password@{{ include "mathpix-ocr.fullname" . }}-postgres:5432/mathpix"
-  DB_DATABASE: mathpix
-  DB_HOST: postgres
-  DEPLOYMENT_ID: ci
-  DEPLOYMENT_NAME: ci
-  DOCKER_ENV: "1"
-  IMAGE_CACHE: "redis://{{ include "mathpix-ocr.fullname" . }}-redis:6379"
-  INFLUX_V2_DATABASE: ""
-  INFLUX_V2_ORG: ""
-  INFLUX_V2_TOKEN: ""
-  INFLUX_V2_URL: ""
-  INLINE_IMAGE_URL: https://cdn.mathpix.com
-  LATEX_TO_PDF_URL: http://latex-to-pdf:8080/pdf
-  LOG_CONNECTION: syslog
-  MATHPIX_CONFIG: /home/ubuntu/monorepo/ocr-api/init/docker_user_env.json
-  MATHPIX_ENV: docker
-  MATHPIX_LOGDIR: /tmp/mathpix/
-  MATHPIX_ROOT: /home/ubuntu/monorepo/ocr-api
-  MATHPIX_TMP: /tmp/mathpix/
-  MATHPIX_UPLOADS: /tmp/uploads/
-  METRICS_LOG_DB: "postgres://user:password@{{ include "mathpix-ocr.fullname" . }}-postgres:5432/metricsdb"
-  MQ_PREFIX: standalone
-  NODE_ENV: production
-  NODE_PATH: '"/home/ubuntu/monorepo/ocr-api/node_modules:/home/ubuntu/monorepo/ocr-api/mathpix/ocr_service:/home/ubuntu/monorepo/ocr-api/mathpix/pdf:/home/ubuntu/monorepo/ocr-api/mathpix/mmd-converter"'
-  NODEJS_SERVICE_PORT: "8070"
-  PDF_LOADER_WORKER_COUNT: "1"
-  PDF_PAGE_COMPLETED_WORKER_COUNT: "1"
-  PYTHONPATH: /home/ubuntu/monorepo/ocr-api:/home/ubuntu/monorepo/zenpix
-  QUEUE_MANAGERS_DEFAULT: "amqp://guest:guest@{{ include "mathpix-ocr.fullname" . }}-rabbitmq:5672/"
-  QUEUE_MANAGERS_GLOBAL: "amqp://guest:guest@{{ include "mathpix-ocr.fullname" . }}-rabbitmq:5672/"
-  REDIS_PREFIX: standalone
-  REGION: dv
-  RESOURCE_PREFIX: standalone
-  S3_ADMIN: mpxadmin
-  S3_BATCH: mpxdata/batch
-  S3_CONVERTER: mpxdata/converter
-  S3_IMAGES: mpxdata/eqn_images
-  S3_PDF: mpxdata/pdf
-  S3_URL: https://s3.amazonaws.com
-  SEARCH_CONNECTION: "http://elasticsearch:9200"
-  SECURITY_GROUP: sg-0b15fbc8065b2c502
-  SERVICE_CACHE: "redis://{{ include "mathpix-ocr.fullname" . }}-redis:6379"
-  SLACK_AUTOSCALING: T0HMU4BK9/B03PK9WFA3E/pgCFTpVyS95RLIZ7g1iugMT6
-  SLACK_DEPLOY: T0HMU4BK9/BCX2V3QLD/QcSZFW87n33mFL7HDvQE5jVD
-  SLACK_SURGE: T0HMU4BK9/BCX2V3QLD/QcSZFW87n33mFL7HDvQE5jVD
-  STATS_CONNECTION: http://telegraf:telegraf@influxdb:8086/defaultdb
-  STATS_CONNECTION_V2: http://telegraf:telegraf@influxdbv2:8086/defaultdb
-  WORKER_COUNT: "3"
----
+{{- range $key, $val := .Values.global.env }}
+  {{ $key }}: "{{ $val }}"
+{{- end }}

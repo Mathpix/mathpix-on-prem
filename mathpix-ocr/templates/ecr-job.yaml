@@ -1,0 +1,11 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: ecr-credential-updater-now
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{ include "mathpix-ocr.labels" . | nindent 4 }}
+spec:
+  ttlSecondsAfterFinished: 300
+  template:
+    {{ include "mathpix-ocr.ecrJobSpec" . | indent 6 }}

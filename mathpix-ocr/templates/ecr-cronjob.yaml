@@ -1,0 +1,15 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: ecr-credential-updater
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{ include "mathpix-ocr.labels" . | nindent 4 }}
+spec:
+  schedule: {{ .Values.cronSchedule | default "0 */11 * * *" }}
+  successfulJobsHistoryLimit: 3
+  failedJobsHistoryLimit: 3
+  jobTemplate:
+    spec:
+      template:
+        {{ include "mathpix-ocr.ecrJobSpec" . | indent 10 }}

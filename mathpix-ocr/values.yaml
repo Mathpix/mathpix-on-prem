@@ -1,18 +1,80 @@
 # values.yaml
+aws:
+  # on prem user keys
+  accessKeyId: ""
+  secretAccessKey: ""
+
 global:
   imagePullPolicy: IfNotPresent
   resources:
     requests:
-      cpu: "256m"
-      memory: "512Mi"
+      cpu: "7168m"
+      memory: "12697Mi"
   nodeSelector: {}
   tolerations: []
   affinity: {}
+  env:
+    MATHPIX_LOGDIR: '/tmp/mathpix/'
+    SLACK_AUTOSCALING: ''
+    GLOBAL_CACHE_WRITER: 'redis://master.test-global-redis-us-east-1-primary.yfmkbe.use1.cache.amazonaws.com:6379'
+    WORKER_COUNT: '4'
+    SERVICE_CACHE: 'redis://mpxadmin-test-redis-v2-us-east-1.yfmkbe.ng.0001.use1.cache.amazonaws.com:6379'
+    SLACK_POST_ALERTS: 'true'
+    DB_CONNECTION: ''
+    DEPLOYMENT_ID: 'brandon-build-test'
+    GLOBAL_CACHE_READER: 'redis://master.test-global-redis-us-east-1-primary.yfmkbe.use1.cache.amazonaws.com:6379'
+    API_SUBSET: 'batch,http,latex,pdf,results,strokes,text'
+    CDN_MODE: 's3'
+    ARCHIVE_CONNECTION: ''
+    METRICS_LOG_DB: ''
+    MATHPIX_UPLOADS: '/tmp/uploads/'
+    PYTHONPATH: '/home/ubuntu/monorepo/ocr-api:/home/ubuntu/monorepo/zenpix'
+    AWS_REGION: 'us-east-1'
+    INLINE_IMAGE_URL: 'https://cdn.mathpix.com/'
+    PDF_PAGE_COMPLETED_WORKER_COUNT: '2'
+    REVISION_GROUP_NAME: 'C2C2K1'
+    PDF_LOADER_WORKER_COUNT: '2'
+    DEPLOYMENT_NAME: 'brandon-build-test'
+    NODE_ENV: 'production'
+    MATHPIX_CONFIG: '/home/ubuntu/monorepo/ocr-api/init/docker_user_env.json'
+    S3_IMAGES: 'mpxdata/eqn_images'
+    INFLUX_V2_TOKEN: ''
+    LOG_CONNECTION: 'logs.papertrailapp.com:42151'
+    MATHPIX_ROOT: '/home/ubuntu/monorepo/ocr-api'
+    MATHPIX_ENV: 'custom'
+    IMAGE_CACHE: 'redis://mpxadmin-test-redis-v2-us-east-1.yfmkbe.ng.0001.use1.cache.amazonaws.com:6379'
+    ARCHIVE_DATABASE: 'mathpix'
+    S3_URL: 'https://s3.amazonaws.com'
+    S3_PDF: 'mpxdata/pdf'
+    INFLUX_V2_DATABASE: 'production'
+    LATEX_TO_PDF_URL: 'https://latex-to-pdf.mathpix.com/pdf'
+    ARCHIVE_HOST: 'ocr-archive-db-cluster.cluster-ct0g4hpwufxb.us-east-1.rds.amazonaws.com'
+    REDIS_PREFIX: 'C2C2K1'
+    DOCKER_ENV: '1'
+    NODE_PATH: '/home/ubuntu/monorepo/ocr-api/node_modules:/home/ubuntu/monorepo/ocr-api/mathpix/ocr_service:/home/ubuntu/monorepo/ocr-api/mathpix/pdf:/home/ubuntu/monorepo/ocr-api/mathpix/mmd-converter'
+    S3_ADMIN: 'mpxadmin'
+    RESOURCE_PREFIX: 'C2C2K1'
+    MQ_PREFIX: 'C2C2K1'
+    CONVERSIONS_WORKER_COUNT: '3'
+    INFLUX_V2_ORG: 'mathpix'
+    S3_BATCH: 'mpxdata/batch'
+    S3_CONVERTER: 'mpxdata/converter'
+    SECURITY_GROUP: 'sg-0ad31070c2daa4dc3'
+    INFLUX_V2_URL: 'https://us-east-1-1.aws.cloud2.influxdata.com'
+    DB_HOST: 'ocr-production-postgres.ct0g4hpwufxb.us-east-1.rds.amazonaws.com'
+    ASG_NAME: 'brandon-build-test-C2C2K1-cpu-asg'
+    MATHPIX_TMP: '/tmp/mathpix/'
+    STATS_CONNECTION_V2: ''
+    SLACK_SURGE: ''
+    NODEJS_SERVICE_PORT: '8080'
+    SLACK_DEPLOY: ''
+    DB_DATABASE: 'mathpix'
+  
 
 services:
   converter:
     enabled: true
-    image: "426887012336.dkr.ecr.us-east-1.amazonaws.com/mathpix/mpxadmin:mathpix-converter-720fc40f0c07398039189390b7176c656b4d19dc"
+    image: "426887012336.dkr.ecr.us-east-1.amazonaws.com/mathpix/mpxadmin:mathpix-converter-5b65e3428ec43ad8194bdd1eda65c8c0d937b127"
     replicaCount: 1
     service:
       port: 8080
@@ -27,11 +89,10 @@ services:
 
   ocr-service:
     enabled: true
-    image: "426887012336.dkr.ecr.us-east-1.amazonaws.com/mathpix/mpxadmin:mathpix-ocr-service-720fc40f0c07398039189390b7176c656b4d19dc"
+    image: "426887012336.dkr.ecr.us-east-1.amazonaws.com/mathpix/mpxadmin:mathpix-ocr-service-5b65e3428ec43ad8194bdd1eda65c8c0d937b127"
     replicaCount: 1
     service:
-      type: ClusterIP
-      port: 8070
+      port: 8080
     command:
       - node
       - /home/ubuntu/monorepo/ocr-api/mathpix/ocr_service/main.js
@@ -40,7 +101,7 @@ services:
 
   pdf-loader:
     enabled: true
-    image: "426887012336.dkr.ecr.us-east-1.amazonaws.com/mathpix/mpxadmin:mathpix-pdf-loader-720fc40f0c07398039189390b7176c656b4d19dc"
+    image: "426887012336.dkr.ecr.us-east-1.amazonaws.com/mathpix/mpxadmin:mathpix-pdf-loader-5b65e3428ec43ad8194bdd1eda65c8c0d937b127"
     replicaCount: 1
     service:
       port: 8080
@@ -55,7 +116,7 @@ services:
 
   pdf-results:
     enabled: true
-    image: "426887012336.dkr.ecr.us-east-1.amazonaws.com/mathpix/mpxadmin:mathpix-pdf-results-720fc40f0c07398039189390b7176c656b4d19dc"
+    image: "426887012336.dkr.ecr.us-east-1.amazonaws.com/mathpix/mpxadmin:mathpix-pdf-results-5b65e3428ec43ad8194bdd1eda65c8c0d937b127"
     replicaCount: 1
     service:
       port: 8080
@@ -70,7 +131,7 @@ services:
 
   results:
     enabled: true
-    image: "426887012336.dkr.ecr.us-east-1.amazonaws.com/mathpix/mpxadmin:mathpix-results-720fc40f0c07398039189390b7176c656b4d19dc"
+    image: "426887012336.dkr.ecr.us-east-1.amazonaws.com/mathpix/mpxadmin:mathpix-results-5b65e3428ec43ad8194bdd1eda65c8c0d937b127"
     replicaCount: 1
     service:
       port: 8080
@@ -84,7 +145,7 @@ services:
 
   ocr-worker:
     enabled: true
-    image: "426887012336.dkr.ecr.us-east-1.amazonaws.com/mathpix/mpxadmin:mathpix-ocr-worker-720fc40f0c07398039189390b7176c656b4d19dc"
+    image: "426887012336.dkr.ecr.us-east-1.amazonaws.com/mathpix/mpxadmin:mathpix-ocr-worker-5b65e3428ec43ad8194bdd1eda65c8c0d937b127"
     replicaCount: 1
     service:
       port: 8080
@@ -96,40 +157,7 @@ services:
         source /home/ubuntu/miniconda3/etc/profile.d/conda.sh &&
         conda activate conda-mathpix-env &&
         python3 /home/ubuntu/monorepo/ocr-api/mathpix/ocr_service/ocr_rabbit.py \
-          --name ocr --port 8080
+          --name ocr-dataverge --port 8080
     env: {}
     resources: {}
-
-postgres:
-  # if this is non-empty, we assume you're using your own DB
-  connectionString: ""
-  # only used if connectionString is empty
-  database: mathpix
-  user: user
-  password: password
-  # PVC / storage settings
-  persistence:
-    accessModes:
-      - ReadWriteOnce
-    size: 10Gi
-  # image settings
-  image:
-    repository: postgres
-    tag: "16"
-  migration:
-    enabled: true
-    image: "426887012336.dkr.ecr.us-east-1.amazonaws.com/mathpix/on-prem-schema:1.0.0"
-    imagePullPolicy: Always
-    backoffLimit: 4
-
-  credentials:
-    enabled: true
-    image: "426887012336.dkr.ecr.us-east-1.amazonaws.com/mathpix/on-prem-credentials:1.0.0"
-    imagePullPolicy: Always
-    backoffLimit: 4
-    configMapName: mathpix-api-credentials
-    configKey: credentials.json
-    mountPath: /app/credentials.json
-    file: config/credentials.json
-    configMapName: mathpix-api-credentials
 

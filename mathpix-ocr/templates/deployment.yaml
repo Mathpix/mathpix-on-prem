@@ -4,7 +4,9 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: {{ include "mathpix-ocr.fullname" $ }}-{{ $name | lower }}
-  namespace: {{ include "mathpix-ocr.fullname" $ }}-mathpix-ocr
+  namespace: {{ $.Release.Namespace }}
+  labels:
+    {{ include "mathpix-ocr.labels" $ | nindent 4 }}
 spec:
   replicas: {{ $svc.replicaCount }}
   selector:
@@ -15,27 +17,8 @@ spec:
       labels:
         app: {{ include "mathpix-ocr.fullname" $ }}-{{ $name | lower }}
     spec:
-      initContainers:
-        - name: wait-for-postgres
-          image: busybox:latest
-          command:
-            - sh
-            - -c
-            - |
-              until nc -z {{ include "mathpix-ocr.fullname" $ }}-postgres 5432; do
-                echo "waiting for postgres"
-                sleep 2
-              done
-        - name: wait-for-redis
-          image: busybox:latest
-          command:
-            - sh
-            - -c
-            - |
-              until nc -z {{ include "mathpix-ocr.fullname" $ }}-redis 6379; do
-                echo "waiting for redis"
-                sleep 2
-              done
+      imagePullSecrets:
+        - name: ecr-registry-secret
       containers:
         - name: {{ $name | lower }}
           image: {{ $svc.image }}
@@ -55,6 +38,16 @@ spec:
                 name: {{ include "mathpix-ocr.fullname" $ }}-mathpix-env
           {{- if gt (len $svc.env) 0 }}
           env:
+          - name: AWS_ACCESS_KEY_ID
+              valueFrom:
+                secretKeyRef:
+                  name: aws-creds
+                  key: AWS_ACCESS_KEY_ID
+          - name: AWS_SECRET_ACCESS_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: aws-creds
+                  key: AWS_SECRET_ACCESS_KEY
 {{- range $key, $val := $svc.env }}
             - name: {{ $key }}
               value: {{ $val | quote }}
